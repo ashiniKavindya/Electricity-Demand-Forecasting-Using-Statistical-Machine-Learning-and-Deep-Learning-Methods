@@ -1,0 +1,57 @@
+.dashboard {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+}
+
+.dashboard header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dashboard section {
+  margin-bottom: 32px;
+}
+
+.dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard th,
+.dashboard td {
+  text-align: left;
+  padding: 6px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.peak-banner {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+}
+
+.live-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.live-controls label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  gap: 4px;
+}
+
+.live-error {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}

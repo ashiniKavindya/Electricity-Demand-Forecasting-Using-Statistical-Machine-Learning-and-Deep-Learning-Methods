@@ -1,0 +1,65 @@
+[
+ {
+  "model": "Random Forest",
+  "mae": 0.0335590711795675,
+  "rmse": 1.0434908692075076,
+  "mape": 0.0026053199974598,
+  "trainingTimeSeconds": 10.580783400000657
+ },
+ {
+  "model": "XGBoost",
+  "mae": 1.1113588396422729,
+  "rmse": 2.688060778547422,
+  "mape": 0.0756278734751469,
+  "trainingTimeSeconds": 2.701997199999824
+ },
+ {
+  "model": "ARIMA(2,1,2)",
+  "mae": 79.85853731844163,
+  "rmse": 100.36777915671452,
+  "mape": 5.377366337758267,
+  "trainingTimeSeconds": 0.0
+ },
+ {
+  "model": "SARIMA(1,1,1)(1,1,1,24)",
+  "mae": 80.02442603762141,
+  "rmse": 100.59141231402371,
+  "mape": 5.377545279488716,
+  "trainingTimeSeconds": 0.0
+ },
+ {
+  "model": "LSTM",
+  "mae": 80.29759160415469,
+  "rmse": 100.91679893255844,
+  "mape": 5.391555431358619,
+  "trainingTimeSeconds": 17.679852699999174
+ },
+ {
+  "model": "Moving average (24h)",
+  "mae": 81.33247049040119,
+  "rmse": 102.4599400490562,
+  "mape": 5.473646943445468,
+  "trainingTimeSeconds": 0.0
+ },
+ {
+  "model": "Seasonal naive (previous week)",
+  "mae": 113.315391344446,
+  "rmse": 141.64340954697587,
+  "mape": 7.608635115581867,
+  "trainingTimeSeconds": 0.0
+ },
+ {
+  "model": "Seasonal naive (previous day)",
+  "mae": 112.9410084684279,
+  "rmse": 142.2373619924885,
+  "mape": 7.588907369719798,
+  "trainingTimeSeconds": 0.0
+ },
+ {
+  "model": "Naive (previous hour)",
+  "mae": 114.12599941971634,
+  "rmse": 143.1619199333539,
+  "mape": 7.65964639475924,
+  "trainingTimeSeconds": 0.0
+ }
+]

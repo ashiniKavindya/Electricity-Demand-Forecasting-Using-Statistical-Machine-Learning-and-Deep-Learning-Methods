@@ -1,0 +1,37 @@
+model_a,model_b,n_common_obs,dm_statistic,p_value,significant_at_0.05
+"ARIMA(2,1,2)",Moving average (24h),7121,-8.770175837671285,0.0,True
+"ARIMA(2,1,2)",Naive (previous hour),7121,-34.60475473076875,0.0,True
+"ARIMA(2,1,2)",Random Forest,7096,58.714731395810325,0.0,True
+"ARIMA(2,1,2)",Seasonal naive (previous day),7121,-33.63083973968691,0.0,True
+"ARIMA(2,1,2)",XGBoost,7096,58.79711675294651,0.0,True
+"ARIMA(2,1,2)",Seasonal naive (previous week),7121,-34.63656927875965,0.0,True
+LSTM,Random Forest,7096,58.725587732461484,0.0,True
+LSTM,Naive (previous hour),7096,-34.34211671796163,0.0,True
+LSTM,XGBoost,7096,58.805728893368865,0.0,True
+Moving average (24h),Naive (previous hour),7121,-33.525207214367065,0.0,True
+LSTM,Seasonal naive (previous week),7096,-34.025170210331865,0.0,True
+LSTM,Seasonal naive (previous day),7096,-33.112417430018574,0.0,True
+Moving average (24h),XGBoost,7096,58.32548004531174,0.0,True
+Moving average (24h),Seasonal naive (previous week),7121,-32.709454093251686,0.0,True
+Moving average (24h),Seasonal naive (previous day),7121,-32.78383583163065,0.0,True
+Moving average (24h),Random Forest,7096,58.25354262927495,0.0,True
+"SARIMA(1,1,1)(1,1,1,24)",Seasonal naive (previous week),7121,-34.42899769329492,0.0,True
+"SARIMA(1,1,1)(1,1,1,24)",Seasonal naive (previous day),7121,-33.41010631380702,0.0,True
+Random Forest,Seasonal naive (previous day),7096,-57.32086878276997,0.0,True
+Random Forest,Seasonal naive (previous week),7096,-59.77606813240879,0.0,True
+Naive (previous hour),"SARIMA(1,1,1)(1,1,1,24)",7121,34.42170168874549,0.0,True
+Naive (previous hour),Random Forest,7096,58.03335965392552,0.0,True
+Random Forest,"SARIMA(1,1,1)(1,1,1,24)",7096,-58.55993139638362,0.0,True
+Naive (previous hour),XGBoost,7096,58.04407733120022,0.0,True
+Seasonal naive (previous day),XGBoost,7096,57.333178677882735,0.0,True
+Seasonal naive (previous week),XGBoost,7096,59.792750838987374,0.0,True
+"SARIMA(1,1,1)(1,1,1,24)",XGBoost,7096,58.640258712387,0.0,True
+Moving average (24h),"SARIMA(1,1,1)(1,1,1,24)",7121,7.5363478406085935,4.8405723873656825e-14,True
+Random Forest,XGBoost,7096,-6.708156229270778,1.9709789356170404e-11,True
+LSTM,Moving average (24h),7096,-6.439830056447603,1.1960743506733706e-10,True
+"ARIMA(2,1,2)",LSTM,7096,-4.207709481368565,2.5797222372281325e-05,True
+"ARIMA(2,1,2)","SARIMA(1,1,1)(1,1,1,24)",7121,-2.888899275948437,0.0038659288416991178,True
+LSTM,"SARIMA(1,1,1)(1,1,1,24)",7096,2.2314899333309146,0.025648693596911798,True
+Naive (previous hour),Seasonal naive (previous week),7121,1.038626010966991,0.2989787038346279,False
+Naive (previous hour),Seasonal naive (previous day),7121,0.622525414510591,0.5335964377761748,False
+Seasonal naive (previous day),Seasonal naive (previous week),7121,0.40728597272657885,0.6837979640741314,False

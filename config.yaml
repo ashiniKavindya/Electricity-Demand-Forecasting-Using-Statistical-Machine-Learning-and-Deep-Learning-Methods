@@ -1,0 +1,42 @@
+data:
+  raw_path: data/raw/
+  processed_path: data/processed/
+  processed_file: data/processed/demand_clean.csv
+  features_file: data/processed/features.csv
+  timestamp_col: timestamp
+  target_col: demand
+  frequency: h
+
+split:
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+features:
+  lags: [1, 2, 6, 24, 48, 168]
+  rolling_windows: [3, 6, 12, 24, 168]
+  cyclical: [hour, day_of_week, month]
+
+lstm:
+  sequence_length: 24
+  units: 64
+  layers: 1
+  dropout: 0.2
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 50
+  early_stopping_patience: 5
+
+peak_demand:
+  percentile_threshold: 0.95
+  seasonal: true
+
+models:
+  xgboost_path: models/xgboost_model.pkl
+  xgboost_feature_columns: models/xgboost_feature_columns.json
+  sarima_path: models/sarima_model.pkl
+  lstm_path: models/lstm_model.h5
+  lstm_scaler_path: models/lstm_scaler.pkl
+  lstm_feature_columns: models/lstm_feature_columns.json
+
+random_seed: 42

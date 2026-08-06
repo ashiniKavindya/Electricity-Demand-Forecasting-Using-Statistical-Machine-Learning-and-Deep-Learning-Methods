@@ -1,0 +1,1049 @@
+# Project Proposal
+
+## Electricity Demand Forecasting Using Statistical, Machine Learning, and Deep Learning Methods
+
+## 1. Introduction
+
+Electricity demand changes continuously according to factors such as time of day, day of the week, weather conditions, holidays, public events, and seasonal patterns. Electricity providers must maintain a balance between electricity generation and consumption. Underestimating demand may result in power shortages, while overestimating demand may increase operating costs and waste resources.
+
+Accurate electricity demand forecasting can support power-generation planning, peak-demand management, maintenance scheduling, energy conservation, and efficient resource allocation. Traditional statistical forecasting methods are useful for modelling trend, seasonality, and autocorrelation. Machine learning models can capture nonlinear relationships between electricity demand, historical consumption, calendar variables, and weather conditions. Deep learning models such as Long Short-Term Memory networks can learn complex sequential patterns directly from historical observations.
+
+This project proposes the development of a short-term electricity demand forecasting system that compares statistical time series models, traditional machine learning models, and deep learning models. The comparison will determine whether the additional complexity and training time of deep learning provide a meaningful improvement over simpler forecasting approaches.
+
+---
+
+## 2. Project Title
+
+**Electricity Demand Forecasting Using Statistical, Machine Learning, and Deep Learning Methods**
+
+---
+
+## 3. Problem Statement
+
+Electricity consumption is highly dynamic and influenced by multiple temporal and environmental factors. Simple forecasting methods may not adequately capture daily cycles, weekly patterns, seasonal changes, nonlinear weather effects, and long-term dependencies.
+
+Statistical models such as ARIMA and SARIMA are effective for modelling linear temporal patterns and seasonality. Machine learning models such as XGBoost can use engineered lag, rolling, calendar, and weather features to capture nonlinear relationships. Deep learning models such as LSTM can process sequential data and learn long-term dependencies.
+
+However, deep learning models require more computational resources, longer training times, and more complex parameter tuning. Therefore, it is important to determine whether deep learning produces significantly better forecasting accuracy than traditional methods for the selected electricity demand dataset.
+
+The main research problem is:
+
+> Which forecasting approach—statistical modelling, traditional machine learning, or deep learning—provides the best balance of accuracy, computational efficiency, and interpretability for short-term electricity demand forecasting?
+
+---
+
+## 4. Aim
+
+The aim of this project is to develop and evaluate an electricity demand forecasting system that compares statistical, machine learning, and deep learning methods using historical electricity consumption, weather information, and calendar-related variables.
+
+---
+
+## 5. Objectives
+
+The objectives of the project are:
+
+1. To collect and examine a suitable electricity demand dataset.
+
+2. To clean and preprocess historical electricity-demand observations.
+
+3. To identify daily, weekly, monthly, and seasonal electricity-demand patterns.
+
+4. To analyse the relationship between electricity demand and weather variables.
+
+5. To construct lag, rolling, calendar, and cyclical features.
+
+6. To develop simple baseline forecasting models.
+
+7. To implement statistical forecasting methods such as ARIMA and SARIMA.
+
+8. To implement traditional machine learning methods such as XGBoost and Random Forest.
+
+9. To implement a deep learning model using LSTM.
+
+10. To evaluate the models using chronological validation and suitable forecasting metrics.
+
+11. To compare models based on forecasting accuracy, training time, prediction time, interpretability, and complexity.
+
+12. To identify the most suitable forecasting approach for the selected dataset.
+
+13. To visualize future demand forecasts and peak-demand periods.
+
+---
+
+## 6. Research Questions
+
+The project will answer the following questions:
+
+1. What daily, weekly, and seasonal patterns exist in electricity demand?
+
+2. How strongly do weather conditions influence electricity consumption?
+
+3. Which historical lag periods are most useful for forecasting future demand?
+
+4. Do machine learning models outperform statistical forecasting models?
+
+5. Does an LSTM model significantly outperform XGBoost and SARIMA?
+
+6. Is the improvement obtained from deep learning sufficient to justify its additional training time and complexity?
+
+7. Which model provides the best balance between accuracy, speed, and interpretability?
+
+---
+
+## 7. Proposed Dataset
+
+### 7.1 Primary Dataset
+
+The primary dataset selected for this project is the **Load Forecasting Dataset** published on Kaggle (`isuranga/load-forecasting-dataset`), covering Sri Lanka from January 2020 to May 2025 at 15-minute resolution (resampled to hourly for this project). It provides electricity demand alongside weather observations (temperature, humidity, wind speed, rainfall, solar irradiance) and calendar variables on a matching timestamp, removing the need for a separate data-fusion step, and its ~5.4 years of continuous coverage is sufficient for daily, weekly, and seasonal pattern analysis.
+
+**Data authenticity note:** the Kaggle listing describes this dataset as sourced from the Ceylon Electricity Board (CEB). Inspection of the data during the data-understanding stage (`01_data_understanding.ipynb`) found several inconsistencies with that claim: demand values average ~1,500 kW, roughly three orders of magnitude below Sri Lanka's actual national peak grid demand of ~2,500–2,700 MW; the bundled "GDP (LKR)" column fluctuates narrowly around 1,000 per row, far below Sri Lanka's actual nominal GDP (tens of trillions of LKR); the `Season` column's month mapping does not correspond to Sri Lanka's tropical/monsoon climate or any standard hemisphere convention; and the data has zero missing values or duplicate timestamps across 5.4 years, which is unusual for raw utility telemetry. Taken together, this indicates the dataset is synthetically generated rather than authentic CEB grid readings. It is used in this project as a **synthetic Sri Lanka-style dataset** — realistic enough in structure and scale (per-observation ranges, daily/weekly/seasonal patterns, weather coupling) to demonstrate and compare the statistical, machine-learning, and deep-learning forecasting methods this project is built around — but its outputs should not be read as validated real-world Sri Lankan demand forecasts. See Section 28 (Limitations) for how this affects interpretation of results.
+
+The expected variables include:
+
+| Variable           | Description                                    |
+| ------------------ | ---------------------------------------------- |
+| Timestamp          | Date and time of each observation              |
+| Electricity demand | Target variable representing electricity usage |
+| Temperature        | Recorded temperature                           |
+| Humidity           | Recorded humidity level                        |
+| Wind speed         | Atmospheric wind speed                         |
+| Rainfall           | Rainfall amount                                |
+| Solar irradiance   | Available solar energy                         |
+| Hour               | Hour of the day                                |
+| Day of week        | Day from Monday to Sunday                      |
+| Month              | Month of the year                              |
+| Season             | Seasonal category                              |
+| Weekend status     | Whether the day is a weekend                   |
+| Holiday status     | Whether the day is a public holiday            |
+| Public event       | Whether a special event occurred               |
+
+The dataset also includes GDP, electricity price, and per-capita energy use columns. These are carried through data cleaning as passthrough columns but are not used in the primary lag/rolling/model feature set, since they are slow-moving macroeconomic variables outside this project's weather- and calendar-driven forecasting scope; they remain available for future extension.
+
+The final variables will depend on the actual dataset selected.
+
+### 7.2 Alternative Datasets
+
+If the primary dataset is unsuitable, the project may use one of the following:
+
+* UCI Electricity Load Diagrams dataset (370 individual clients in Portugal, 2011–2014, 15-minute resolution — real and well-documented, but not Sri Lankan and has no bundled weather data)
+* RECON-SL (IEEE DataPort) — genuine Sri Lankan household smart-meter and survey data, 4,063 households, October 2022 to January 2025; requires a free IEEE DataPort account and has no bundled weather data
+* LIRNEasia Sri Lankan Residential Electricity Consumption (Kaggle) — genuine Sri Lankan household survey and meter data, ~4,000 households over ~20 months; larger and less structured (multi-round survey merge required), no bundled weather data
+* UCI Individual Household Electric Power Consumption dataset
+* Open Power System Data
+* Smart-meter electricity consumption dataset
+
+The final dataset will be selected according to:
+
+* Number of observations
+* Time coverage
+* Sampling frequency
+* Availability of weather variables
+* Missing-value percentage
+* Data quality
+* Documentation quality
+* Suitability for short-term forecasting
+
+---
+
+## 8. Project Scope
+
+The project will focus on short-term electricity demand forecasting.
+
+The main forecasting horizons may include:
+
+* One hour ahead
+* Six hours ahead
+* Twelve hours ahead
+* Twenty-four hours ahead
+
+The final forecasting horizon will depend on the dataset frequency.
+
+The project will compare four categories of forecasting models:
+
+| Category         | Proposed Models           |
+| ---------------- | ------------------------- |
+| Baseline         | Naïve and Seasonal Naïve  |
+| Statistical      | ARIMA and SARIMA          |
+| Machine Learning | XGBoost and Random Forest |
+| Deep Learning    | LSTM                      |
+
+GRU may be added as an optional second deep learning model if sufficient time and computational resources are available.
+
+---
+
+## 9. Proposed System Functionalities
+
+### 9.1 Data Loading
+
+The system will:
+
+* Load the dataset from a CSV or similar format
+* Display dataset size
+* Display variable names
+* Identify data types
+* Show sample observations
+* Identify the time period covered
+* Identify the target variable
+* Determine the observation frequency
+
+### 9.2 Timestamp Processing
+
+The system will:
+
+* Convert timestamps into datetime format
+* Sort records chronologically
+* Detect duplicated timestamps
+* Detect missing time intervals
+* Set the timestamp as the index
+* Extract date and time information
+
+### 9.3 Data Cleaning
+
+The system will:
+
+* Handle missing values
+* Remove duplicate records
+* Correct invalid data types
+* Investigate negative or impossible electricity-demand values
+* Identify inconsistent measurement units
+* Detect abnormal observations
+
+### 9.4 Missing-Value Handling
+
+Possible techniques include:
+
+* Forward filling
+* Backward filling
+* Linear interpolation
+* Time-based interpolation
+* Seasonal-value replacement
+* Removal of severely incomplete periods
+
+Future information will not be used when filling past values.
+
+### 9.5 Outlier Detection
+
+The project will identify unusual observations using:
+
+* Box plots
+* Interquartile range
+* Rolling mean
+* Rolling standard deviation
+* Z-scores
+* Seasonal comparisons
+* Demand-threshold analysis
+
+Extreme values will not automatically be removed because some may represent genuine peak-demand events.
+
+### 9.6 Resampling
+
+Depending on the original frequency, data may be resampled into:
+
+* Hourly demand
+* Daily demand
+* Weekly demand
+
+Hourly data will be preferred for short-term forecasting.
+
+### 9.7 Exploratory Data Analysis
+
+The exploratory analysis will include:
+
+* Overall demand trend
+* Hourly demand pattern
+* Daily demand pattern
+* Weekly demand pattern
+* Monthly demand pattern
+* Seasonal pattern
+* Weekend and weekday comparison
+* Holiday and non-holiday comparison
+* Peak-demand hours
+* Demand distribution
+* Weather-demand relationships
+* Correlation analysis
+
+### 9.8 Time Series Decomposition
+
+The electricity-demand series will be decomposed into:
+
+* Trend
+* Seasonality
+* Residual component
+
+This will help identify daily, weekly, and longer-term seasonal behaviour.
+
+### 9.9 Stationarity Testing
+
+The project will investigate stationarity using:
+
+* Rolling mean
+* Rolling variance
+* Augmented Dickey-Fuller test
+* KPSS test
+
+Possible transformations may include:
+
+* Differencing
+* Seasonal differencing
+* Logarithmic transformation
+* Power transformation
+
+### 9.10 Autocorrelation Analysis
+
+The system will analyse temporal dependence using:
+
+* Autocorrelation function
+* Partial autocorrelation function
+* Lag-correlation analysis
+
+This will help determine useful ARIMA parameters and lag features.
+
+### 9.11 Feature Engineering
+
+#### Calendar Features
+
+* Hour
+* Day of week
+* Day of month
+* Week of year
+* Month
+* Quarter
+* Weekend indicator
+* Holiday indicator
+* Public-event indicator
+
+#### Lag Features
+
+Possible lag features include:
+
+* Previous hour demand
+* Previous two-hour demand
+* Previous six-hour demand
+* Previous 24-hour demand
+* Previous 48-hour demand
+* Previous seven-day demand
+
+#### Rolling Features
+
+* Three-hour rolling mean
+* Six-hour rolling mean
+* Twelve-hour rolling mean
+* Twenty-four-hour rolling mean
+* Seven-day rolling mean
+* Rolling minimum
+* Rolling maximum
+* Rolling standard deviation
+
+#### Weather Features
+
+* Temperature
+* Humidity
+* Wind speed
+* Rainfall
+* Solar irradiance
+* Temperature-humidity interaction
+* Extreme-weather indicator
+
+#### Cyclical Features
+
+Sine and cosine encoding may be applied to:
+
+* Hour
+* Day of week
+* Month
+
+All lag and rolling features will be shifted correctly to prevent data leakage.
+
+---
+
+## 10. Forecasting Models
+
+### 10.1 Baseline Models
+
+Baseline models will establish the minimum forecasting performance.
+
+The proposed baseline methods are:
+
+* Previous-value naïve forecast
+* Previous-day forecast
+* Seasonal naïve forecast
+* Moving-average forecast
+
+A seasonal naïve forecast may predict electricity demand using the demand recorded at the same hour on the previous day or previous week.
+
+### 10.2 ARIMA
+
+ARIMA will be used to model autoregressive relationships, differencing, and moving-average behaviour.
+
+The model will be represented by:
+
+* Autoregressive order
+* Differencing order
+* Moving-average order
+
+### 10.3 SARIMA
+
+SARIMA will extend ARIMA by including seasonal components.
+
+It may be used to model:
+
+* Daily seasonality
+* Weekly seasonality
+* Longer recurring demand patterns
+
+### 10.4 Random Forest
+
+Random Forest will use engineered features such as:
+
+* Lag demand
+* Rolling demand
+* Hour
+* Day of week
+* Weather conditions
+
+It will also provide feature-importance values.
+
+### 10.5 XGBoost
+
+XGBoost will be the primary traditional machine learning model.
+
+It is suitable because it can:
+
+* Capture nonlinear relationships
+* Handle interactions between variables
+* Use lag and rolling features
+* Model weather effects
+* Provide feature importance
+* Support efficient hyperparameter tuning
+
+### 10.6 Long Short-Term Memory Network
+
+LSTM will be the main deep learning model.
+
+LSTM is designed to learn patterns in sequential data and may capture both short-term and long-term dependencies.
+
+The LSTM input will use sequences created through a sliding-window method.
+
+For example, a model may use the previous 24 or 48 hours of electricity demand and weather variables to predict the next hour or next 24 hours.
+
+The proposed LSTM architecture may include:
+
+* Input sequence layer
+* One or two LSTM layers
+* Dropout layer
+* Fully connected output layer
+* Adam optimizer
+* Mean squared error loss function
+
+Important parameters will include:
+
+* Sequence length
+* Number of LSTM units
+* Number of layers
+* Batch size
+* Learning rate
+* Number of epochs
+* Dropout rate
+
+Early stopping will be used to reduce overfitting and unnecessary training.
+
+### 10.7 Optional GRU Model
+
+A Gated Recurrent Unit model may be included as an optional extension.
+
+GRU has a simpler architecture than LSTM and may train faster while producing similar forecasting accuracy.
+
+---
+
+## 11. Data Preparation for Deep Learning
+
+The deep learning model will require additional preprocessing.
+
+### 11.1 Scaling
+
+Input variables will be standardized or normalized using:
+
+* StandardScaler
+* MinMaxScaler
+
+The scaler will be fitted only on the training data.
+
+### 11.2 Sequence Creation
+
+Historical observations will be converted into sequences.
+
+For example:
+
+* Input: Previous 24 hours
+* Output: Demand for the next hour
+
+or:
+
+* Input: Previous seven days
+* Output: Demand for the next 24 hours
+
+### 11.3 Tensor Preparation
+
+The data will be converted into three-dimensional arrays containing:
+
+* Number of samples
+* Sequence length
+* Number of features
+
+### 11.4 Model Training
+
+The LSTM model will be trained using:
+
+* Training sequences
+* Validation sequences
+* Batch processing
+* Early stopping
+* Model checkpointing
+
+### 11.5 Inverse Transformation
+
+Predictions will be converted back to the original electricity-demand scale before evaluation.
+
+---
+
+## 12. Training Time Considerations
+
+Traditional machine learning and deep learning methods have different computational requirements.
+
+Expected approximate training times may be:
+
+| Model          |                         CPU |                        GPU |
+| -------------- | --------------------------: | -------------------------: |
+| Seasonal Naïve |        Less than one second |       Less than one second |
+| ARIMA          |  Seconds to several minutes |          Usually CPU-based |
+| SARIMA         |   Several minutes or longer |          Usually CPU-based |
+| Random Forest  |      One to several minutes |          Usually CPU-based |
+| XGBoost        |    Seconds to a few minutes |            Faster with GPU |
+| LSTM           | Approximately 15–60 minutes | Approximately 2–15 minutes |
+| GRU            | Approximately 10–45 minutes | Approximately 2–10 minutes |
+
+The actual training time will depend on:
+
+* Dataset size
+* Number of features
+* Sequence length
+* Batch size
+* Number of epochs
+* Model size
+* Hardware
+* Number of tuning experiments
+
+The project will record both model accuracy and training time.
+
+---
+
+## 13. Data Splitting
+
+The data will be divided chronologically rather than randomly.
+
+A possible split is:
+
+* First 70% for training
+* Next 15% for validation
+* Final 15% for testing
+
+The test period will remain unseen until the final evaluation.
+
+---
+
+## 14. Time Series Cross-Validation
+
+Walk-forward or expanding-window validation will be used.
+
+The process will involve:
+
+1. Training the model on an earlier period.
+2. Predicting the following period.
+3. Expanding the training window.
+4. Repeating the procedure.
+5. Averaging performance across validation periods.
+
+This approach reflects how forecasting models operate in real applications.
+
+---
+
+## 15. Hyperparameter Tuning
+
+### XGBoost Parameters
+
+Possible parameters include:
+
+* Number of estimators
+* Learning rate
+* Maximum depth
+* Minimum child weight
+* Subsample ratio
+* Column-sampling ratio
+* Regularization strength
+
+### LSTM Parameters
+
+Possible parameters include:
+
+* Sequence length
+* Number of LSTM units
+* Number of layers
+* Batch size
+* Learning rate
+* Dropout rate
+* Number of epochs
+
+Because deep learning tuning can require significant computational time, the tuning search will be limited to a manageable number of combinations.
+
+---
+
+## 16. Evaluation Metrics
+
+The models will be evaluated using:
+
+### Mean Absolute Error
+
+MAE calculates the average absolute difference between actual and predicted demand.
+
+### Root Mean Squared Error
+
+RMSE gives more importance to large forecasting errors.
+
+### Mean Absolute Percentage Error
+
+MAPE expresses forecast errors as percentages.
+
+### Symmetric Mean Absolute Percentage Error
+
+SMAPE may be used as an additional percentage-based metric.
+
+### Mean Absolute Scaled Error
+
+MASE may be included to compare the models directly with a naïve forecast.
+
+### Statistical Significance Testing
+
+Since several research questions ask whether one model *significantly* outperforms another (for example, LSTM versus XGBoost and SARIMA), forecast errors will also be compared using the Diebold-Mariano test. This test evaluates whether the difference in forecast accuracy between two models is statistically significant rather than attributable to random variation, and it will be applied to the relevant model pairs identified in the research questions.
+
+### Computational Measures
+
+The project will also record:
+
+* Training time
+* Prediction time
+* Memory usage, where practical
+* Number of model parameters
+* Complexity of implementation
+
+---
+
+## 17. Model Comparison
+
+The models will be compared based on:
+
+| Criterion            | Description                               |
+| -------------------- | ----------------------------------------- |
+| Accuracy             | MAE, RMSE, MAPE, SMAPE or MASE            |
+| Training time        | Time required to train each model         |
+| Prediction time      | Time required to generate forecasts       |
+| Complexity           | Difficulty of implementation and tuning   |
+| Interpretability     | Ability to explain the prediction process |
+| Peak-demand accuracy | Ability to predict high-demand periods    |
+| Generalization       | Performance on unseen future observations |
+
+The final model will not be selected only according to accuracy. Practical efficiency and interpretability will also be considered.
+
+---
+
+## 18. Overfitting Prevention
+
+For machine learning models, overfitting may be reduced using:
+
+* Cross-validation
+* Tree-depth limits
+* Regularization
+* Subsampling
+* Feature selection
+
+For the LSTM model, overfitting may be reduced using:
+
+* Dropout
+* Early stopping
+* Validation monitoring
+* Reduced network size
+* Learning-rate adjustment
+* Limited training epochs
+
+---
+
+## 19. Forecast Visualizations
+
+The system will produce:
+
+* Historical electricity-demand plots
+* Seasonal decomposition plots
+* Actual versus predicted demand
+* Forecasts for the next 24 hours
+* Residual plots
+* Forecast-error distributions
+* Model-performance comparison charts
+* Feature-importance charts
+* LSTM training and validation loss curves
+* Peak-demand comparison plots
+
+---
+
+## 20. Explainability
+
+### Machine Learning Explainability
+
+The project may use:
+
+* Feature importance
+* Permutation importance
+* SHAP values
+
+These methods can identify the variables that most strongly influence XGBoost predictions.
+
+### Deep Learning Interpretation
+
+LSTM models are less interpretable than statistical and tree-based models.
+
+Possible interpretation methods include:
+
+* Comparing forecasts under different input conditions
+* Analysing prediction errors by hour and day
+* Feature-ablation experiments
+* SHAP-based sequence interpretation, if computationally practical
+
+The reduced interpretability of deep learning will be discussed as a project limitation.
+
+---
+
+## 21. Peak-Demand Analysis
+
+A peak-demand period will be defined as any hour in which observed demand exceeds the 95th percentile of demand for the corresponding season, rather than a single fixed value across the whole year. This seasonal threshold prevents naturally high winter or summer demand from dominating the definition of a "peak" and keeps the comparison consistent across all models.
+
+The project will:
+
+* Define a peak-demand threshold
+* Identify actual peak-demand periods
+* Compare predicted and actual peaks
+* Calculate peak-demand forecasting error
+* Examine whether weather and calendar factors contribute to peaks
+* Compare each model’s performance during high-demand periods
+
+This analysis is important because large errors during peak periods may have greater practical consequences than small errors during normal periods.
+
+---
+
+## 22. Optional Forecast Dashboard
+
+An optional React dashboard (built with Vite and TypeScript, using Recharts for visualizations) may include:
+
+* Historical demand display
+* Date-range selection
+* Model selection
+* Actual and predicted demand
+* Twenty-four-hour forecast
+* Model-error comparison
+* Peak-demand warnings
+* Feature-importance display
+* Forecast download
+
+The dashboard will be treated as an extension rather than a core requirement.
+
+By default the dashboard displays results exported from the training notebooks (predictions, metrics, and feature importances), requiring no server of its own. As a further optional extension, a small local-only FastAPI backend may serve live multi-step forecasts from the saved SARIMA, XGBoost, and LSTM models directly to the dashboard. This backend is run locally rather than deployed publicly, keeping the project free to run end-to-end. Because future weather values are not known at inference time, live forecasts hold each weather variable constant at its last observed value for the forecast horizon, which is a simplification rather than a substitute for real weather forecasts (see Section 28, Limitations).
+
+---
+
+## 23. Functional Requirements
+
+The system should be able to:
+
+* Load the selected electricity-demand dataset
+* Validate the timestamp and demand columns
+* Clean missing and duplicated records
+* Resample observations
+* Visualize historical demand
+* Analyse temporal patterns
+* Analyse weather relationships
+* Generate lag and rolling features
+* Create sequences for LSTM
+* Scale data correctly
+* Train baseline models
+* Train ARIMA or SARIMA
+* Train Random Forest or XGBoost
+* Train an LSTM model
+* Tune selected hyperparameters
+* Generate electricity-demand forecasts
+* Calculate evaluation metrics
+* Compare model accuracy and training time
+* Display actual and predicted demand
+* Export predictions to CSV
+* Save trained models
+
+---
+
+## 24. Non-Functional Requirements
+
+### Accuracy
+
+At least one developed model should outperform the seasonal naïve baseline.
+
+### Efficiency
+
+The system should run on a standard laptop, Google Colab, or Kaggle Notebook.
+
+### Reproducibility
+
+The project will include:
+
+* Fixed random seeds
+* Dependency information
+* Dataset references
+* Saved model configurations
+* Documented preprocessing steps
+
+### Maintainability
+
+The code will be separated into functions or modules for:
+
+* Data loading
+* Cleaning
+* Feature engineering
+* Sequence creation
+* Model training
+* Evaluation
+* Visualization
+
+### Usability
+
+The notebooks and scripts will contain clear headings, comments, and explanations.
+
+---
+
+## 25. Technologies and Tools
+
+The proposed technologies include:
+
+* Python
+* Pandas
+* NumPy
+* Matplotlib
+* Statsmodels
+* Scikit-learn
+* XGBoost
+* TensorFlow/Keras or PyTorch
+* Joblib
+* React, Vite, TypeScript, and Recharts for the optional dashboard
+* FastAPI and Uvicorn for the optional local live-prediction backend
+* MLflow as an optional experiment-tracking tool
+
+The project may be implemented using:
+
+* Jupyter Notebook
+* Google Colab
+* Kaggle Notebook
+* Visual Studio Code
+
+A GPU environment such as Kaggle or Google Colab may be used for LSTM training.
+
+---
+
+## 26. Expected Outputs
+
+The expected outputs are:
+
+1. A cleaned electricity-demand dataset.
+
+2. A data-quality report.
+
+3. Exploratory analysis of demand patterns.
+
+4. Time series decomposition.
+
+5. Stationarity and autocorrelation analysis.
+
+6. Engineered lag, rolling, calendar, and weather features.
+
+7. Baseline forecasting models.
+
+8. ARIMA or SARIMA models.
+
+9. XGBoost or Random Forest models.
+
+10. An LSTM deep learning model.
+
+11. A comparison of statistical, machine learning, and deep learning approaches.
+
+12. Training-time and prediction-time comparisons.
+
+13. Actual-versus-predicted visualizations.
+
+14. LSTM loss curves.
+
+15. Feature-importance analysis.
+
+16. Peak-demand analysis.
+
+17. Future-demand forecasts.
+
+18. Exported prediction files.
+
+19. Final report.
+
+20. Optional interactive dashboard.
+
+---
+
+## 27. Expected Outcome
+
+The project is expected to identify the forecasting method that provides the best balance between accuracy and computational cost.
+
+Possible outcomes include:
+
+* SARIMA may provide a strong and interpretable seasonal forecast.
+* XGBoost may provide high accuracy using engineered lag and weather features.
+* LSTM may capture complex sequential behaviour but require longer training.
+* Deep learning may provide only a small accuracy improvement despite greater complexity.
+* Traditional machine learning may provide the best overall balance.
+
+The final conclusion will be based on experimental results.
+
+---
+
+## 28. Limitations
+
+**Dataset authenticity:** as noted in Section 7.1, the primary dataset appears to be synthetically generated rather than authentic Ceylon Electricity Board telemetry, despite being marketed as CEB-sourced on Kaggle. This project therefore demonstrates and compares forecasting methodologies on a realistic, Sri Lanka-style synthetic series rather than validated real-world national demand data. Model comparisons (accuracy, training time, interpretability) remain methodologically valid, but absolute forecast values and any claims about actual Sri Lankan grid behaviour should not be drawn from these results without separately validating against authentic CEB data.
+
+Other possible limitations include:
+
+* Missing electricity-demand observations
+* Incomplete weather variables
+* Limited historical coverage
+* Unrecorded public events
+* Sudden policy or behavioural changes
+* Power cuts and supply restrictions
+* Extreme weather conditions
+* High computational cost of deep learning tuning
+* LSTM overfitting
+* Reduced deep learning interpretability
+* Difficulty forecasting unusual peak-demand periods
+
+---
+
+## 29. Out of Scope
+
+The core project will not include:
+
+* Real-time national grid control
+* Automatic generation scheduling
+* Electricity-price forecasting
+* Fault detection in power equipment
+* Live smart-meter data ingestion
+* Transformer-based forecasting models
+* Production cloud deployment
+* Mobile-application development
+* Long-term national energy-policy forecasting
+
+---
+
+## 30. Future Enhancements
+
+Future extensions may include:
+
+* GRU forecasting
+* Bidirectional LSTM
+* CNN-LSTM
+* Temporal Fusion Transformer
+* PatchTST
+* Probabilistic forecasting
+* Prediction intervals
+* Renewable-energy generation forecasting
+* Electricity-price forecasting
+* Real-time weather integration
+* Automated retraining
+* Model-drift monitoring
+* Cloud deployment
+* REST API development
+* Advanced SHAP interpretation
+* Multi-region forecasting
+
+---
+
+## 31. Project Deliverables
+
+The final deliverables will include:
+
+* Dataset description
+* Cleaned dataset
+* Exploratory data analysis notebook
+* Statistical forecasting notebook
+* Machine learning notebook
+* Deep learning notebook
+* Model-comparison results
+* Forecast visualizations
+* Prediction CSV file
+* Saved model files
+* Source code
+* README documentation
+* Final written report
+* Presentation slides
+* Optional React dashboard
+* Optional local FastAPI backend for live predictions
+
+---
+
+## 32. Proposed Timeline
+
+| Week    | Activity                                                  |
+| ------- | --------------------------------------------------------- |
+| Week 1  | Problem definition and dataset selection                  |
+| Week 2  | Data understanding and quality analysis                   |
+| Week 3  | Data cleaning and timestamp processing                    |
+| Week 4  | Exploratory data analysis                                 |
+| Week 5  | Decomposition, stationarity, and autocorrelation analysis |
+| Week 6  | Feature engineering and baseline modelling                |
+| Week 7  | ARIMA and SARIMA development                              |
+| Week 8  | Random Forest and XGBoost development                     |
+| Week 9  | LSTM data preparation and sequence creation               |
+| Week 10 | LSTM training and tuning                                  |
+| Week 11 | Model evaluation and comparison                           |
+| Week 12 | Peak-demand analysis and interpretation                   |
+| Week 13 | Dashboard or result export                                |
+| Week 14 | Report writing, documentation, and presentation           |
+
+Because LSTM training and tuning (Week 10) is the most time-intensive stage, the hyperparameter search for this stage will be scoped narrowly in advance (for example, 5–10 combinations rather than an exhaustive grid) so that it reliably fits within the allotted week without displacing later stages.
+
+---
+
+## 33. Success Criteria
+
+The project will be considered successful if:
+
+* The data is correctly processed chronologically.
+* Important demand patterns are identified.
+* At least one baseline model is implemented.
+* At least one statistical model is implemented.
+* At least one traditional machine learning model is implemented.
+* At least one LSTM model is implemented.
+* Data leakage is prevented.
+* Chronological validation is used.
+* All models are evaluated on the same unseen test period.
+* At least one advanced model outperforms the seasonal naïve baseline.
+* Accuracy and training time are compared.
+* Peak-demand performance is analysed.
+* Results are reproducible and clearly documented.
+
+---
+
+## 34. Conclusion
+
+This project will develop a comprehensive electricity demand forecasting system using statistical time series methods, traditional machine learning, and deep learning.
+
+The project will compare naïve forecasting, ARIMA or SARIMA, XGBoost, and LSTM models. Each method will be evaluated using forecasting accuracy, training time, prediction speed, model complexity, interpretability, and performance during peak-demand periods.
+
+The inclusion of deep learning will allow the project to investigate whether LSTM can capture complex sequential dependencies more effectively than traditional approaches. At the same time, the comparison will determine whether any accuracy improvement justifies the higher computational cost and reduced interpretability.
+
+The final outcome will provide a practical and evidence-based recommendation regarding the most suitable approach for short-term electricity demand forecasting.
