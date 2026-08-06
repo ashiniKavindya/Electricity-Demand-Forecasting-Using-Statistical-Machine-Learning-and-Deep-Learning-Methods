@@ -2,6 +2,7 @@ data:
   raw_dir: data/raw/aemo/
   processed_path: data/processed/
   processed_file: data/processed/aemo_nem_demand_hourly.csv
+  db_path: data/live/aemo.db
   timestamp_col: timestamp
   target_col: demand
   regions: [NSW1, QLD1, SA1, TAS1, VIC1]
@@ -19,9 +20,14 @@ features:
   cyclical: [hour, day_of_week, month]
 
 aemo:
+  # Not used by the collector: ELEC_NEM_SUMMARY reports TOTALDEMAND, a
+  # different metric than OPERATIONAL_DEMAND below - mixing them would
+  # create a discontinuity at the historical/live boundary. Kept here only
+  # as a reference for a possible future price/interconnector feature.
   live_endpoint: https://visualisations.aemo.com.au/aemo/apps/api/report/ELEC_NEM_SUMMARY
   archive_url_template: https://nemweb.com.au/Reports/Archive/Operational_Demand/ACTUAL_HH/PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_{date}.zip
-  poll_interval_seconds: 300 # used starting Stage 2 (live collector) - not yet built
+  current_dir_url: https://nemweb.com.au/Reports/Current/Operational_Demand/ACTUAL_HH/
+  poll_interval_seconds: 300
 
 models:
   xgboost_path: models/aemo/xgboost_v1.pkl

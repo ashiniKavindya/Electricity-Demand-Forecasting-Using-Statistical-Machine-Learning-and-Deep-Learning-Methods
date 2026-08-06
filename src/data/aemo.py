@@ -43,6 +43,21 @@ def parse_operational_demand_csv(csv_bytes: bytes) -> list[tuple[str, str, float
     return records
 
 
+def parse_single_interval_zip(zip_bytes: bytes) -> list[tuple[str, str, float]]:
+    """Parse one of NEMWeb's "Current" per-interval zips (a zip holding one CSV directly).
+
+    Same underlying CSV format as the weekly archives, just one interval
+    instead of a week's worth. Returns records in the same shape as
+    `parse_operational_demand_csv`.
+    """
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as archive:
+        records = []
+        for csv_name in archive.namelist():
+            if csv_name.upper().endswith(".CSV"):
+                records.extend(parse_operational_demand_csv(archive.read(csv_name)))
+        return records
+
+
 def parse_weekly_archive(zip_path: Path) -> pd.DataFrame:
     """Parse one weekly archive zip (a zip of per-interval zips, each holding one CSV)."""
     records = []
