@@ -25,6 +25,13 @@ reports/figures/*
 # MLflow
 mlruns/
 
+# Live collector database (Stage 2+, not yet built)
+*.db
+data/live/
+
+# Test cache
+.pytest_cache/
+
 # OS / editor
 .DS_Store
 .vscode/

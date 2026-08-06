@@ -13,3 +13,5 @@ joblib
 mlflow
 jupyter
 pyyaml
+requests
+pytest

@@ -1,10 +1,11 @@
 data:
-  raw_path: data/raw/
+  raw_dir: data/raw/aemo/
   processed_path: data/processed/
-  processed_file: data/processed/demand_clean.csv
-  features_file: data/processed/features.csv
+  processed_file: data/processed/aemo_nem_demand_hourly.csv
   timestamp_col: timestamp
   target_col: demand
+  regions: [NSW1, QLD1, SA1, TAS1, VIC1]
+  timezone: Etc/GMT-10 # NEM market time: fixed UTC+10, no daylight saving
   frequency: h
 
 split:
@@ -17,26 +18,14 @@ features:
   rolling_windows: [3, 6, 12, 24, 168]
   cyclical: [hour, day_of_week, month]
 
-lstm:
-  sequence_length: 24
-  units: 64
-  layers: 1
-  dropout: 0.2
-  batch_size: 32
-  learning_rate: 0.001
-  epochs: 50
-  early_stopping_patience: 5
-
-peak_demand:
-  percentile_threshold: 0.95
-  seasonal: true
+aemo:
+  live_endpoint: https://visualisations.aemo.com.au/aemo/apps/api/report/ELEC_NEM_SUMMARY
+  archive_url_template: https://nemweb.com.au/Reports/Archive/Operational_Demand/ACTUAL_HH/PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_{date}.zip
+  poll_interval_seconds: 300 # used starting Stage 2 (live collector) - not yet built
 
 models:
-  xgboost_path: models/xgboost_model.pkl
-  xgboost_feature_columns: models/xgboost_feature_columns.json
-  sarima_path: models/sarima_model.pkl
-  lstm_path: models/lstm_model.h5
-  lstm_scaler_path: models/lstm_scaler.pkl
-  lstm_feature_columns: models/lstm_feature_columns.json
+  xgboost_path: models/aemo/xgboost_v1.pkl
+  xgboost_feature_columns: models/aemo/xgboost_v1_feature_columns.json
+  version: v1
 
 random_seed: 42
