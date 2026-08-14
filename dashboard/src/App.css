@@ -55,3 +55,90 @@
   color: #b91c1c;
   font-size: 0.9rem;
 }
+
+.section-loading {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.section-error {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.forecast-card {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.forecast-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.forecast-meta {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.accuracy-empty {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.accuracy-stats {
+  display: flex;
+  gap: 32px;
+}
+
+.accuracy-stats > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.health-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.health-card {
+  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid;
+  font-size: 0.9rem;
+}
+
+.health-card h3 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.health-card.ok {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.health-card.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.health-error {
+  color: #b91c1c;
+  font-weight: 600;
+}

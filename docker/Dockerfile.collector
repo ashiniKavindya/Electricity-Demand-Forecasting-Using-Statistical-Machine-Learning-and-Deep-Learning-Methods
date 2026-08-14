@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1.7
+FROM python:3.10-slim
+
+WORKDIR /app
+
+ENV PIP_DEFAULT_TIMEOUT=300 \
+    PIP_RETRIES=10
+
+# Copy project files
+COPY collector/ /app/collector/
+COPY src/ /app/src/
+COPY config.yaml /app/config.yaml
+COPY collector/requirements.txt /app/collector_requirements.txt
+
+# Install dependencies
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --prefer-binary -r collector_requirements.txt
+
+# Create data directories
+RUN mkdir -p /app/data/live
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "-m", "collector.run"]

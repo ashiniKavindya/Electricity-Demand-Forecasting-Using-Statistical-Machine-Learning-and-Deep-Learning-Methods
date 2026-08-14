@@ -7,16 +7,17 @@ export function PeakDemandBanner({
   data: DemandPoint[];
   percentileThreshold?: number;
 }) {
-  const sorted = [...data].map((d) => d.actual).sort((a, b) => a - b);
-  const threshold = sorted[Math.floor(sorted.length * percentileThreshold)];
-  const peakPoints = data.filter((d) => d.actual >= threshold);
+  const actuals = data.map((d) => d.actual).filter((v): v is number => v !== null);
+  if (actuals.length === 0) return null;
 
-  if (peakPoints.length === 0) return null;
+  const sorted = [...actuals].sort((a, b) => a - b);
+  const threshold = sorted[Math.floor(sorted.length * percentileThreshold)];
+  const peakCount = actuals.filter((v) => v >= threshold).length;
 
   return (
     <div className="peak-banner">
-      {peakPoints.length} peak-demand hour(s) above the {Math.round(percentileThreshold * 100)}th percentile
-      threshold ({threshold.toLocaleString()} kW)
+      {peakCount} peak-demand hour(s) above the {Math.round(percentileThreshold * 100)}th percentile threshold (
+      {Math.round(threshold).toLocaleString()} MW)
     </div>
   );
 }

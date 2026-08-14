@@ -16,3 +16,4 @@ pyyaml
 requests
 pytest
 apscheduler
+psycopg2-binary

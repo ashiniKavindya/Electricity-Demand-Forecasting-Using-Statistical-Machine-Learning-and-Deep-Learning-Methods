@@ -1,2 +1,4 @@
 model_a,model_b,n_common_obs,dm_statistic,p_value,significant_at_0.05
 XGBoost,Seasonal naive (168h),1260,-17.736417177637172,0.0,True
+LSTM,Seasonal naive (168h),1286,-19.142522350584134,0.0,True
+LSTM,XGBoost,1260,-5.341086091479625,9.239136322669594e-08,True

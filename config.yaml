@@ -29,9 +29,24 @@ aemo:
   current_dir_url: https://nemweb.com.au/Reports/Current/Operational_Demand/ACTUAL_HH/
   poll_interval_seconds: 300
 
+inference:
+  interval_seconds: 300
+
+lstm:
+  sequence_length: 24 # hours of history per training window
+  units: 64
+  dropout: 0.2
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 32
+  early_stopping_patience: 5
+
 models:
   xgboost_path: models/aemo/xgboost_v1.pkl
   xgboost_feature_columns: models/aemo/xgboost_v1_feature_columns.json
+  lstm_path: models/aemo/lstm_v1.keras
+  lstm_scaler_path: models/aemo/lstm_v1_scaler.pkl
+  lstm_feature_columns: models/aemo/lstm_v1_feature_columns.json
   version: v1
 
 random_seed: 42

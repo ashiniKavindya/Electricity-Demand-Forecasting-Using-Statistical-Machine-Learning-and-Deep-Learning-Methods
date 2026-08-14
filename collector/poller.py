@@ -1,5 +1,4 @@
 """Poll NEMWeb's Current directory for new operational-demand intervals and store them."""
-import sqlite3
 from datetime import datetime
 
 from collector.nemweb_client import download_interval_zip, list_available_intervals
@@ -15,7 +14,7 @@ def _normalize(records: list[tuple[str, str, float]]) -> list[tuple[str, str, fl
     ]
 
 
-def poll_once(conn: sqlite3.Connection) -> dict:
+def poll_once(conn) -> dict:
     """Fetch and store every interval not yet in the database. Safe to call repeatedly -
     on an empty database this backfills from NEMWeb's ~60-day retention window; on a
     warm database it only fetches what's new since the last poll.

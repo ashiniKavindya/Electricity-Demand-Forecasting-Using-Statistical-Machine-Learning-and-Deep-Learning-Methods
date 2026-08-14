@@ -1,2 +1,2 @@
-model,mae,rmse,mape,smape,n
+model,mae,rmse,mape,smape,n_test
 XGBoost,393.9570669022817,534.3856584185529,1.6506459804637916,1.6616981533923307,1260

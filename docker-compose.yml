@@ -1,0 +1,137 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aemo_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aemo_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aemo_password}
+      POSTGRES_DB: ${POSTGRES_DB:-aemo_db}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aemo_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aemo_network
+    restart: unless-stopped
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mlflow
+    container_name: aemo_mlflow
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql://${POSTGRES_USER:-aemo_user}:${POSTGRES_PASSWORD:-aemo_password}@postgres:5432/${POSTGRES_DB:-aemo_db}
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: /app/mlflow_artifacts
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow_artifacts:/app/mlflow_artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aemo_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  collector:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.collector
+    container_name: aemo_collector
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aemo_user}:${POSTGRES_PASSWORD:-aemo_password}@postgres:5432/${POSTGRES_DB:-aemo_db}
+      DB_BACKEND: postgres
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aemo_network
+    restart: unless-stopped
+
+  inference:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.inference
+    container_name: aemo_inference
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aemo_user}:${POSTGRES_PASSWORD:-aemo_password}@postgres:5432/${POSTGRES_DB:-aemo_db}
+      DB_BACKEND: postgres
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aemo_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: aemo_backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aemo_user}:${POSTGRES_PASSWORD:-aemo_password}@postgres:5432/${POSTGRES_DB:-aemo_db}
+      DB_BACKEND: postgres
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aemo_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    container_name: aemo_dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - aemo_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  mlflow_artifacts:
+
+networks:
+  aemo_network:
+    driver: bridge

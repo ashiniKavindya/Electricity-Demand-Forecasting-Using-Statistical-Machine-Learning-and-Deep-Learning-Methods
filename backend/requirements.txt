@@ -1,9 +1,5 @@
 fastapi
 uvicorn[standard]
 pandas
-numpy
-joblib
 pyyaml
-statsmodels
-xgboost
-tensorflow
+psycopg2-binary

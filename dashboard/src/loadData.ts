@@ -1,56 +1,54 @@
 import type {
-  BackendModelKey,
+  AccuracySummary,
+  CollectorHealthRun,
   DemandPoint,
-  FeatureImportance,
-  LiveForecastResult,
-  ModelMetrics,
+  Fetched,
+  Forecast,
+  HealthStatus,
+  InferenceHealthRun,
+  OfflineMetric,
 } from "./types";
-import { mockDemandSeries, mockFeatureImportance, mockMetrics } from "./mockData";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const UNREACHABLE = "Can't reach the local backend. Start it with: uvicorn backend.main:app --reload --port 8000";
 
-async function fetchJSON<T>(path: string): Promise<T | null> {
+async function fetchJSON<T>(path: string): Promise<Fetched<T>> {
   try {
-    const res = await fetch(path);
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
-}
-
-// Looks for exported model results in public/data/ (see
-// src/evaluation/export_dashboard_data.py). Falls back to mock data
-// when a file hasn't been exported yet, so the dashboard always renders.
-export async function loadDemandSeries(): Promise<DemandPoint[]> {
-  return (await fetchJSON<DemandPoint[]>("/data/demand.json")) ?? mockDemandSeries;
-}
-
-export async function loadMetrics(): Promise<ModelMetrics[]> {
-  return (await fetchJSON<ModelMetrics[]>("/data/metrics.json")) ?? mockMetrics;
-}
-
-export async function loadFeatureImportance(): Promise<FeatureImportance[]> {
-  return (await fetchJSON<FeatureImportance[]>("/data/feature_importance.json")) ?? mockFeatureImportance;
-}
-
-// Calls the local-only FastAPI backend (backend/main.py) for a live
-// prediction. Returns a typed failure reason instead of throwing, since
-// "backend not running" and "model not trained yet" are expected states
-// during development, not exceptional ones.
-export async function fetchLivePrediction(model: BackendModelKey, horizon = 24): Promise<LiveForecastResult> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/predict?model=${model}&horizon=${horizon}`);
+    const res = await fetch(`${BACKEND_URL}${path}`);
     if (!res.ok) {
       const body = await res.json().catch(() => null);
       return { ok: false, reason: body?.detail ?? `Request failed (${res.status})` };
     }
-    const data = await res.json();
-    return { ok: true, predictions: data.predictions };
+    return { ok: true, data: (await res.json()) as T };
   } catch {
-    return {
-      ok: false,
-      reason: "Can't reach the local backend. Start it with: uvicorn backend.main:app --reload --port 8000",
-    };
+    return { ok: false, reason: UNREACHABLE };
   }
+}
+
+export function loadHealth(): Promise<Fetched<HealthStatus>> {
+  return fetchJSON<HealthStatus>("/health");
+}
+
+export function loadDemandChart(hours = 168): Promise<Fetched<DemandPoint[]>> {
+  return fetchJSON<DemandPoint[]>(`/demand/chart?hours=${hours}`);
+}
+
+export function loadLatestForecast(): Promise<Fetched<Forecast>> {
+  return fetchJSON<Forecast>("/forecast/latest");
+}
+
+export function loadAccuracy(limit = 200): Promise<Fetched<AccuracySummary>> {
+  return fetchJSON<AccuracySummary>(`/monitoring/accuracy?limit=${limit}`);
+}
+
+export function loadCollectorHealth(limit = 5): Promise<Fetched<CollectorHealthRun[]>> {
+  return fetchJSON<CollectorHealthRun[]>(`/monitoring/collector?limit=${limit}`);
+}
+
+export function loadInferenceHealth(limit = 5): Promise<Fetched<InferenceHealthRun[]>> {
+  return fetchJSON<InferenceHealthRun[]>(`/monitoring/inference?limit=${limit}`);
+}
+
+export function loadOfflineMetrics(): Promise<Fetched<OfflineMetric[]>> {
+  return fetchJSON<OfflineMetric[]>("/metrics/offline");
 }

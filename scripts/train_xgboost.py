@@ -8,15 +8,9 @@ import yaml
 
 from src.data.load_data import chronological_split, load_raw_data, set_timestamp_index
 from src.evaluation.metrics import mae, mape, rmse, smape
-from src.features.build_features import (
-    add_calendar_features,
-    add_cyclical_features,
-    add_lag_features,
-    add_rolling_features,
-)
+from src.features.build_features import build_all_features
 from src.models.machine_learning import fit_xgboost
 
-CYCLICAL_PERIODS = {"hour": 24, "day_of_week": 7, "month": 12}
 # Per-region demand columns sum to the target itself - including them as
 # features would be near-perfect leakage (the same shape of bug as the old
 # project's temperature column), so they're excluded here on purpose.
@@ -28,15 +22,6 @@ def load_config(path: str = "config.yaml") -> dict:
         return yaml.safe_load(f)
 
 
-def build_features(df: pd.DataFrame, target_col: str, lags: list[int], rolling_windows: list[int]) -> pd.DataFrame:
-    df = add_calendar_features(df)
-    df = add_lag_features(df, target_col, lags)
-    df = add_rolling_features(df, target_col, rolling_windows)
-    for col, period in CYCLICAL_PERIODS.items():
-        df = add_cyclical_features(df, col, period)
-    return df
-
-
 if __name__ == "__main__":
     config = load_config()
     target_col = config["data"]["target_col"]
@@ -44,7 +29,7 @@ if __name__ == "__main__":
     df = load_raw_data(config["data"]["processed_file"], timestamp_col=config["data"]["timestamp_col"])
     df = set_timestamp_index(df, timestamp_col=config["data"]["timestamp_col"])
 
-    features_df = build_features(df, target_col, config["features"]["lags"], config["features"]["rolling_windows"])
+    features_df = build_all_features(df, target_col, config["features"]["lags"], config["features"]["rolling_windows"])
     exclude = {target_col, *REGION_DEMAND_COLUMNS}
     feature_cols = [c for c in features_df.columns if c not in exclude]
     features_df = features_df.dropna(subset=feature_cols + [target_col])

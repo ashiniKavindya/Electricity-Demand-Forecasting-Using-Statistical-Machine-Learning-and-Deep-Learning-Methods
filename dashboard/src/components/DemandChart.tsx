@@ -17,8 +17,15 @@ export function DemandChart({ data }: { data: DemandPoint[] }) {
         <XAxis dataKey="timestamp" tick={{ fontSize: 11 }} minTickGap={40} />
         <YAxis tick={{ fontSize: 11 }} width={60} />
         <Tooltip />
-        <Line type="monotone" dataKey="actual" stroke="#2563eb" dot={false} name="Actual" />
-        <Line type="monotone" dataKey="predicted" stroke="#f97316" dot={false} name="Predicted" />
+        <Line type="monotone" dataKey="actual" stroke="#2563eb" dot={false} name="Actual" connectNulls />
+        <Line
+          type="monotone"
+          dataKey="predicted"
+          stroke="#f97316"
+          dot={{ r: 3 }}
+          name="Predicted"
+          connectNulls={false}
+        />
       </LineChart>
     </ResponsiveContainer>
   );

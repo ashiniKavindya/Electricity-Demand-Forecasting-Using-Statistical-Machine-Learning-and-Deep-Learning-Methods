@@ -1,15 +1,15 @@
-import type { ModelMetrics } from "../types";
+import type { OfflineMetric } from "../types";
 
-export function MetricsTable({ metrics }: { metrics: ModelMetrics[] }) {
+export function MetricsTable({ metrics }: { metrics: OfflineMetric[] }) {
   return (
     <table>
       <thead>
         <tr>
           <th>Model</th>
-          <th>MAE</th>
+          <th>MAE (MW)</th>
           <th>RMSE</th>
           <th>MAPE (%)</th>
-          <th>Training time (s)</th>
+          <th>Test hours</th>
         </tr>
       </thead>
       <tbody>
@@ -19,7 +19,7 @@ export function MetricsTable({ metrics }: { metrics: ModelMetrics[] }) {
             <td>{row.mae.toFixed(0)}</td>
             <td>{row.rmse.toFixed(0)}</td>
             <td>{row.mape.toFixed(1)}</td>
-            <td>{row.trainingTimeSeconds}</td>
+            <td>{row.n}</td>
           </tr>
         ))}
       </tbody>

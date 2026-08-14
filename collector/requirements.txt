@@ -2,3 +2,4 @@ requests
 apscheduler
 pandas
 pyyaml
+psycopg2-binary

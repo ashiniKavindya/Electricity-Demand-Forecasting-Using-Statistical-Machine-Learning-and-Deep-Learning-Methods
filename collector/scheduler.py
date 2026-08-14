@@ -1,6 +1,4 @@
 """Run the AEMO collector on a recurring schedule."""
-import sqlite3
-
 import yaml
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -8,7 +6,7 @@ from collector.poller import poll_once
 from src.data.db import get_connection
 
 
-def _poll_and_report(conn: sqlite3.Connection) -> None:
+def _poll_and_report(conn) -> None:
     result = poll_once(conn)
     if result["error"]:
         print(f"poll failed: {result['error']}")

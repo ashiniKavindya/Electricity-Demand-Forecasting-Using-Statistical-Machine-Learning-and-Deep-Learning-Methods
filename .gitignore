@@ -21,6 +21,7 @@ models/*
 # Reports / generated figures
 reports/figures/*
 !reports/figures/.gitkeep
+!reports/figures/dashboard_screenshot.png
 
 # MLflow
 mlruns/
