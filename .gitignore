@@ -36,3 +36,10 @@ data/live/
 # OS / editor
 .DS_Store
 .vscode/
+
+# Private working drafts (do not commit)
+proposal.md
+*proposal*.md
+guide*.md
+guided*.md
+guidance*.md
