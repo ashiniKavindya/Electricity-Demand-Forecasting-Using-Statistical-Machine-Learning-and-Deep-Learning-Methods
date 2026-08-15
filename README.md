@@ -17,15 +17,15 @@ Operator (AEMO), not a synthetic or pre-cleaned teaching dataset.
 - Serves forecasts, actual demand, accuracy, and system health through FastAPI.
 - Displays the live system in a React dashboard.
 
-All five planned stages are complete.
 
-| Stage | Deliverable | Status |
-|---|---|---|
-| 1 | Historical pipeline and model evaluation | Complete |
-| 2 | Live AEMO data collector | Complete |
-| 3 | Live one-hour-ahead inference | Complete |
-| 4 | FastAPI backend and React dashboard | Complete |
-| 5 | Rolling accuracy and service-health monitoring | Complete |
+
+| Stage | Deliverable |
+|---|---|
+| 1 | Historical pipeline and model evaluation | 
+| 2 | Live AEMO data collector | 
+| 3 | Live one-hour-ahead inference | 
+| 4 | FastAPI backend and React dashboard | 
+| 5 | Rolling accuracy and service-health monitoring | 
 
 ## Why AEMO data?
 
